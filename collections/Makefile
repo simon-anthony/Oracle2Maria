@@ -1,8 +1,7 @@
 # $Header$
 .SUFFIXES: .log .dat
 
-USER = simonanthony@ORCL
-PASS = Naxy7839
+# GSSAPI login
 USER = 
 PASS = @ORCL
 
