@@ -1,0 +1,4 @@
+*.swp
+hr/human_resources_mariadb/schema.sql
+hr/human_resources_mariadb/schema.mysql
+sqlines.log
