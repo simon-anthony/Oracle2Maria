@@ -1,4 +1,10 @@
 *.swp
-hr/human_resources_mariadb/schema.sql
-hr/human_resources_mariadb/schema.mysql
-sqlines.log
+*.log
+hr/human_resources_mariadb/tables.sql
+hr/human_resources_mariadb/tables.mysql
+hr/human_resources_mariadb/constraints.mysql
+hr/human_resources_mariadb/constraints.sql
+hr/human_resources_mariadb/indexes.mysql
+hr/human_resources_mariadb/indexes.sql
+hr/human_resources_mariadb/procedures.mysql
+hr/human_resources_mariadb/procedures.sql

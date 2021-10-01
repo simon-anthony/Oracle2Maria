@@ -1,7 +1,9 @@
 #!/bin/sh -
 
+schema=hr
+
 sqlplus -s <<-!
-	hr/hr7839
+	$schema/hr7839
 	set pagesize 0 tab off newp none emb on heading off feedback off verify off echo off trimspool on
 	set long 2000000000 linesize 9999
 
@@ -18,7 +20,7 @@ sqlplus -s <<-!
 	END;
 	/
 
-	spool schema.sql
+	spool $schema.sql
 
 	SELECT dbms_metadata.get_ddl(object_type, object_name, user) line
 	FROM user_objects

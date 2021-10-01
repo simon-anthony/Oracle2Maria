@@ -1,0 +1,157 @@
+#!/bin/bash
+
+prog=`basename $0 .sh`
+
+usage() {
+	cat >&2 <<-! 
+usage: $prog [OPTION] [<schema>]
+OPTION:
+  -t, --table                Tables
+  -v, --view                 Views
+  -q, --sequence             Sequences
+  -f, --function             Functions
+  -P, --package              Packages
+  -B, --package_body         Package Bodies
+  -p, --procedure            Procedures
+  -i, --index                Indexes
+  -s, --synonym              Synonyms
+  -T, --trigger              Triggers
+  -y, --type                 Types
+  -c, --constraint           Table Constraints
+  -?, --help                 Give this help list
+	!
+	exit 2
+}
+
+TEMP=`/opt/local/bin/getopt -o 'tvqfPBpisTych' --long 'table,view,sequence,function,package,package_body,procedure,index,synonym,trigger,type,constraint,help' \
+	 -n "$prog" -- "$@"`
+
+[ $? != 0 ] && { usage; exit 1; }
+
+# Note the quotes around `$TEMP': they are essential!
+eval set -- "$TEMP"
+unset TEMP
+typeset tflg= vflg= qflg= fflg= Pflg= Bflg= pflg= iflg= sflg= Tflg= yflg= cflg= hflg= errflg=
+
+while true
+do
+	case "$1" in
+	-t|--table)
+		[ "$vflg" -o "$qflg" -o "$fflg" -o "$Pflg" -o "$Bflg" -o "$pflg" -o "$iflg" -o "$sflg" -o "$Tflg" -o "$yflg" -o "$cflg" ] && errflg=y
+		object_type='TABLE'
+		tflg=y
+		shift; continue ;;
+	-v|--view)
+		[ "$tflg" -o "$qflg" -o "$fflg" -o "$Pflg" -o "$Bflg" -o "$pflg" -o "$iflg" -o "$sflg" -o "$Tflg" -o "$yflg" -o "$cflg" ] && errflg=y
+		object_type='VIEW'
+		vflg=y
+		shift; continue ;;
+	-q|--sequence)
+		[ "$tflg" -o "$vflg" -o "$fflg" -o "$Pflg" -o "$Bflg" -o "$pflg" -o "$iflg" -o "$sflg" -o "$Tflg" -o "$yflg" -o "$cflg" ] && errflg=y
+		object_type='SEQUENCE'
+		qflg=y
+		shift; continue ;;
+	-f|--function)
+		[ "$tflg" -o "$vflg" -o "$qflg" -o "$Pflg" -o "$Bflg" -o "$pflg" -o "$iflg" -o "$sflg" -o "$Tflg" -o "$yflg" -o "$cflg" ] && errflg=y
+		object_type='FUNCTION'
+		fflg=y
+		shift; continue ;;
+	-P|--package|--package_specification|--package_spec)
+		[ "$tflg" -o "$vflg" -o "$qflg" -o "$fflg" -o "$Bflg" -o "$pflg" -o "$iflg" -o "$sflg" -o "$Tflg" -o "$yflg" -o "$cflg" ] && errflg=y
+		object_type='PACKAGE'
+		fflg=y
+		shift; continue ;;
+	-B|--package_body|--body)
+		[ "$tflg" -o "$vflg" -o "$qflg" -o "$fflg" -o "$Pflg" -o "$pflg" -o "$iflg" -o "$sflg" -o "$Tflg" -o "$yflg" -o "$cflg" ] && errflg=y
+		object_type='PACKAGE_BODY'
+		Bflg=y
+		shift; continue ;;
+	-p|--procedure)
+		[ "$tflg" -o "$vflg" -o "$qflg" -o "$fflg" -o "$Pflg" -o "$Bflg" -o "$iflg" -o "$sflg" -o "$Tflg" -o "$yflg" -o "$cflg" ] && errflg=y
+		object_type='PROCEDURE'
+		pflg=y
+		shift; continue ;;
+	-i|--index)
+		[ "$tflg" -o "$vflg" -o "$qflg" -o "$fflg" -o "$Pflg" -o "$Bflg" -o "$pflg" -o "$sflg" -o "$Tflg" -o "$yflg" -o "$cflg" ] && errflg=y
+		object_type='INDEX'
+		iflg=y
+		shift; continue ;;
+	-s|--synonym)
+		[ "$tflg" -o "$vflg" -o "$qflg" -o "$fflg" -o "$Pflg" -o "$Bflg" -o "$pflg" -o "$iflg" -o "$Tflg" -o "$yflg" -o "$cflg" ] && errflg=y
+		object_type='SYNONYM'
+		sflg=y
+		shift; continue ;;
+	-T|--trigger)
+		[ "$tflg" -o "$vflg" -o "$qflg" -o "$fflg" -o "$Pflg" -o "$Bflg" -o "$pflg" -o "$iflg" -o "$sflg" -o "$yflg" -o "$cflg" ] && errflg=y
+		object_type='TRIGGER'
+		Tflg=y
+		shift; continue ;;
+	-y|--type)
+		[ "$tflg" -o "$vflg" -o "$qflg" -o "$fflg" -o "$Pflg" -o "$Bflg" -o "$pflg" -o "$iflg" -o "$sflg" -o "$Tflg" -o "$cflg" ] && errflg=y
+		object_type='TYPE'
+		yflg=y
+		shift; continue ;;
+	-c|--constraint)
+		[ "$tflg" -o "$vflg" -o "$qflg" -o "$fflg" -o "$Pflg" -o "$Bflg" -o "$pflg" -o "$iflg" -o "$sflg" -o "$Tflg" -o "$yflg" ] && errflg=y
+		object_type='TABLE'
+		cflg=y
+		shift; continue ;;
+	-h|--help)
+		errflg=y
+		shift; break ;;
+	--)	shift; break ;;
+	*)	errflg=y; break ;;
+	esac
+done
+
+[ "$tflg" -o "$vflg" -o "$qflg" -o "$fflg" -o "$Pflg" -o "$Bflg" -o "$pflg" -o "$iflg" -o "$sflg" -o "$Tflg" -o "$yflg" -o "$cflg" ] || errflg=y
+
+[ $errflg ] && usage
+
+function filter {
+	if [ $tflg ]
+	then
+		awk '/CREATE TABLE/,/;/ { print }'
+	elif [ $cflg ]
+	then
+		awk '/ALTER TABLE.*PRIMARY KEY/,/;/ { print > ".pk.sql"; next }
+			 /ALTER TABLE.*FOREIGN KEY/,/;/ { print > ".fk.sql"; next }
+			 /ALTER TABLE/,/;/ { print > ".ot.sql" }'
+		cat .pk.sql .fk.sql .ot.sql
+		rm -f .pk.sql .fk.sql .ot.sql
+	else
+		cat -
+	fi
+}
+schema=hr
+
+sqlplus -s <<-! | filter
+	$schema/hr7839
+	set pagesize 0 tab off newp none emb on heading off feedback off verify off echo off trimspool on
+	set long 2000000000 linesize 9999
+
+	column line for a9999
+
+	BEGIN
+		dbms_metadata.set_transform_param(dbms_metadata.session_transform, 'PRETTY', TRUE);
+		dbms_metadata.set_transform_param(dbms_metadata.session_transform, 'TABLESPACE', FALSE);
+		dbms_metadata.set_transform_param(dbms_metadata.session_transform, 'SQLTERMINATOR', TRUE);
+		dbms_metadata.set_transform_param(dbms_metadata.session_transform, 'SEGMENT_ATTRIBUTES', FALSE);
+		dbms_metadata.set_transform_param(dbms_metadata.session_transform, 'FORCE', FALSE);
+		dbms_metadata.set_transform_param(dbms_metadata.session_transform, 'CONSTRAINTS_AS_ALTER', true);
+		dbms_metadata.set_transform_param(dbms_metadata.session_transform, 'EMIT_SCHEMA', FALSE);
+	END;
+	/
+
+	SELECT dbms_metadata.get_ddl(object_type, object_name, user) line
+	FROM user_objects
+	WHERE object_type IN ( '$object_type' )
+	ORDER BY DECODE(object_type,
+					'TABLE', 1,
+					'VIEW', 2,
+					'INDEX', 3,
+					'TRIGGER', 4,
+					'PACKAGE', 5,
+					'PACKAGE BODY', 6,
+									7), object_type;
+!
