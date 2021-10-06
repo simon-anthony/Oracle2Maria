@@ -1,0 +1,18 @@
+set sql_mode=oracle;
+
+DELIMITER $$
+BEGIN 
+	HR.ADD_JOB_HISTORY(100, STR_TO_DATE('2020-10-25', '%Y-%m-%d'), STR_TO_DATE('2021-11-13', '%Y-%m-%d'), 'FI_MGR', 70);
+END;
+$$
+
+DELIMITER $$
+BEGIN 
+	    HR.ADD_JOB_HISTORY(100, STR_TO_DATE('2020-09-13', '%Y-%m-%d'), STR_TO_DATE('2021-12-01', '%Y-%m-%d'), 'SH_CLERK', 150);
+END;
+$$
+-- p_emp_id          HR.job_history.employee_id%TYPE,
+-- p_start_date      HR.job_history.start_date%TYPE,
+-- p_end_date        HR.job_history.end_date%TYPE,
+-- p_job_id          HR.job_history.job_id%TYPE,
+-- p_department_id   HR.job_history.department_id%TYPE)
