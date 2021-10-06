@@ -8,3 +8,9 @@ hr/human_resources_mariadb/indexes.mysql
 hr/human_resources_mariadb/indexes.sql
 hr/human_resources_mariadb/procedures.mysql
 hr/human_resources_mariadb/procedures.sql
+hr/human_resources_mariadb/functions.mysql
+hr/human_resources_mariadb/functions.sql
+hr/human_resources_mariadb/packages.mysql
+hr/human_resources_mariadb/packages.sql
+hr/human_resources_mariadb/sequences.mysql
+hr/human_resources_mariadb/sequences.sql

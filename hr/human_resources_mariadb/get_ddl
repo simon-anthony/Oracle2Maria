@@ -2,6 +2,9 @@
 
 prog=`basename $0 .sh`
 
+: ${TWO_TASK:=ORCL}
+export TWO_TASK
+
 usage() {
 	cat >&2 <<-! 
 usage: $prog [OPTION] [<schema>]
@@ -127,6 +130,10 @@ schema=hr
 
 sqlplus -s <<-! | filter
 	$schema/hr7839
+
+	whenever sqlerror exit sql.sqlcode
+	whenever oserror exit 1
+
 	set pagesize 0 tab off newp none emb on heading off feedback off verify off echo off trimspool on
 	set long 2000000000 linesize 9999
 
